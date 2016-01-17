@@ -1,0 +1,10 @@
+/.project
+/.classpath
+/.settings
+/target
+/build.xml
+/build
+/bin
+/dist
+/.idea/
+.DS_Store
