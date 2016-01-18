@@ -19,8 +19,8 @@ package xyz.aoeu.spongekt
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent
-import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
+import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
 
 /**
@@ -28,24 +28,13 @@ import kotlin.reflect.jvm.javaType
  */
 class ServiceProperty<T: Any>(val plugin: Any) {
     private var serviceRef: T? = null
-    private var serviceType: KClass<T>? = null;
-
-    init {
-        Sponge.getGame().eventManager.registerListeners(plugin, this)
-    }
+    private var serviceType: Class<T>? = null;
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        if (serviceType == null) {
-            val returnType = property.returnType;
-            if (returnType is KClass<*>) {
-                serviceType = returnType as KClass<T>;
-            } else {
-                throw IllegalArgumentException("Services with generic types are not supported")
-            }
-        }
+        updateType(property.returnType)
 
         if (serviceRef == null) {
-            serviceRef = Sponge.getGame().serviceManager.provide(serviceType!!.java).get();
+            serviceRef = Sponge.getGame().serviceManager.provide(serviceType!!).get();
         }
 
         return serviceRef!!
@@ -55,12 +44,25 @@ class ServiceProperty<T: Any>(val plugin: Any) {
     fun onServiceChange(event: ChangeServiceProviderEvent) {
         val type = serviceType;
         val service = event.newProvider
-        if (type != null && type.java.isInstance(service)) {
-            serviceRef = type.java.cast(service);
+        if (type != null && type.isInstance(service)) {
+            serviceRef = type.cast(service);
         }
     }
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        Sponge.getGame().serviceManager.setProvider(plugin, property.returnType.javaType as Class<T>, value)
+        Sponge.getGame().serviceManager.setProvider(plugin, updateType(property.returnType), value)
+    }
+
+    private fun updateType(type: KType): Class<T> {
+        if (serviceType == null) {
+            val returnType = type.javaType;
+            if (returnType is Class<*>) {
+                serviceType = returnType as Class<T>;
+                Sponge.getGame().eventManager.registerListeners(plugin, this)
+            } else {
+                throw IllegalArgumentException("Services with generic types are not supported")
+            }
+        }
+        return serviceType!!
     }
 }
