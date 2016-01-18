@@ -7,7 +7,7 @@ Components
 
 ### Services
 
-SpongeKt provides a property delegate for services, `ServiceProperty`.
+SpongeKt provides a property delegate for services, `ServiceProperty`, that will track the currently registered service of the specified type.
 
 ```kotlin
 @Plugin([...])

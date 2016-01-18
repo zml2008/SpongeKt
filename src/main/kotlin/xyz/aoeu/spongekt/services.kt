@@ -16,9 +16,13 @@
  */
 package xyz.aoeu.spongekt
 
+import com.google.common.collect.Sets
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.event.Listener
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent
+import java.lang.ref.WeakReference
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import kotlin.reflect.KProperty
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.javaType
@@ -26,9 +30,9 @@ import kotlin.reflect.jvm.javaType
 /**
  * A delegate for service-backed properties. Setting a value to this property will register that value as its service
  */
-class ServiceProperty<T: Any>(val plugin: Any) {
-    private var serviceRef: T? = null
-    private var serviceType: Class<T>? = null;
+class ServiceProperty<T: Any>(internal val plugin: Any) {
+    internal var serviceRef: T? = null
+    internal var serviceType: Class<T>? = null;
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         updateType(property.returnType)
@@ -40,7 +44,6 @@ class ServiceProperty<T: Any>(val plugin: Any) {
         return serviceRef!!
     }
 
-    @Listener
     fun onServiceChange(event: ChangeServiceProviderEvent) {
         val type = serviceType;
         val service = event.newProvider
@@ -58,11 +61,46 @@ class ServiceProperty<T: Any>(val plugin: Any) {
             val returnType = type.javaType;
             if (returnType is Class<*>) {
                 serviceType = returnType as Class<T>;
-                Sponge.getGame().eventManager.registerListeners(plugin, this)
+                registerListener(this)
             } else {
                 throw IllegalArgumentException("Services with generic types are not supported")
             }
         }
         return serviceType!!
+    }
+}
+
+// -- Internal junk to prevent holding references to service instances
+
+private val listenerTracker: ConcurrentMap<Any, PluginListenerHolder> = ConcurrentHashMap()
+
+private fun registerListener(prop: ServiceProperty<*>) {
+    var holder = listenerTracker.get(prop.plugin);
+    if (holder == null) {
+        holder = PluginListenerHolder()
+        val existing = listenerTracker.putIfAbsent(prop.plugin, holder)
+        if (existing != null) {
+            holder = existing;
+        } else {
+            Sponge.getGame().eventManager.registerListeners(prop.plugin, holder)
+        }
+    }
+    holder.listeners.add(WeakReference(prop))
+}
+
+private class PluginListenerHolder {
+    val listeners: MutableSet<WeakReference<ServiceProperty<*>>> = Sets.newConcurrentHashSet()
+
+    @Listener
+    fun onServiceChange(event: ChangeServiceProviderEvent) {
+        val it = listeners.iterator();
+        while (it.hasNext()) {
+            val prop = it.next().get();
+            if (prop == null) {
+                it.remove()
+                continue
+            }
+            prop.onServiceChange(event)
+        }
     }
 }
