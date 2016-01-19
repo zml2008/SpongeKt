@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set shiftwidth=2: -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>xyz.aoeu</groupId>
@@ -41,8 +42,12 @@
       <name>GitHub Pages</name>
       <url>github:http://${ghUser}.github.io/${ghRepo}/${siteUrlSuffix}/</url>
     </site>
+    <repository>
+      <id>pex-repo</id>
+      <url>https://pex-repo.aoeu.xyz</url>
+    </repository>
   </distributionManagement>
-    <prerequisites>
+  <prerequisites>
     <maven>3.0.3</maven>
   </prerequisites>
   <profiles>
