@@ -71,7 +71,7 @@ And for Gradle:
 
 ```groovy
 
-source 'xyz.aoeu:spongekt:1.0-SNAPSHOT'
+compile 'xyz.aoeu:spongekt:1.0-SNAPSHOT'
 ```
 
 
