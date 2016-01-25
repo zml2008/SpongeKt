@@ -8,3 +8,15 @@
 /dist
 /.idea/
 .DS_Store
+
+# LaTeX dust
+
+.d/
+_minted-*/
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+docs/readme.tex

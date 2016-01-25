@@ -1,0 +1,25 @@
+\documentclass[oneside]{memoir}
+
+\usepackage{hyperref}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{fourier}
+\usepackage{minted}
+\usepackage{gitinfo2}
+
+\hypersetup{colorlinks=true}
+
+\title{SpongeKt}
+\author{zml}
+
+
+\pagestyle{giplain}
+\setsecnumdepth{section}
+\maxsecnumdepth{subsection}
+\begin{document}
+\vspace*{\droptitle}
+{\noindent \Huge \textbf{\thetitle} \vskip 0.5em }
+%{\noindent \LARGE \lineskip 0.5em \textbf{\theauthor} \vskip 2em }
+
+\input{readme.tex}
+\end{document}

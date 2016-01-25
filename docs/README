@@ -1,0 +1,8 @@
+This is the documentation for SpongeKt. While the plain documentation is available in Markdown, formatted documentation is also available in \LaTeX, and much of the contents of this folder exist to support that usage.
+
+Dependencies
+------------
+
+- LaTeX
+- pygments package
+- pandoc

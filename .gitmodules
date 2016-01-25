@@ -1,0 +1,3 @@
+[submodule "docs/makefile-templates"]
+	path = docs/makefile-templates
+	url = https://github.com/zml2008/makefile-templates
