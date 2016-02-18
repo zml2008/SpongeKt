@@ -13,7 +13,7 @@
     <siteUrlSuffix>${project.version}</siteUrlSuffix>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <kotlin.version>1.0.0</kotlin.version>
-    <dokka.version>0.9.4</dokka.version>
+    <dokka.version>0.9.7</dokka.version>
     <ghUser>zml2008</ghUser>
     <ghRepo>SpongeKt</ghRepo>
     <ghProject>${ghUser}/${ghRepo}</ghProject>
